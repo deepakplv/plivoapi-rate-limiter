@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 import sys
 
 requires = [
+        'redis>=2.6.0'
         ]
 
 
