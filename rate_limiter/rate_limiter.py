@@ -1,5 +1,6 @@
-"""Implementation of various decorators fot rate-limiting"""
-
+"""
+Implementation of various decorators fot rate-limiting
+"""
 from abc import ABCMeta, abstractmethod
 import redis
 from hashlib import sha1
@@ -17,6 +18,11 @@ class RESTResponse(object):
 
 
 class RateLimiter(object):
+    """
+    Base class for rate-limit decorators.
+    window_size: In seconds
+    max_request: Count of allowed requests in the window
+    """
     __metaclass__ = ABCMeta
 
     def __init__(self, window_size, max_request, redis_pool=None):
@@ -29,7 +35,11 @@ class RateLimiter(object):
         def wrapper(rest_handler, auth_session, *args, **kwargs):
             # api_name contains the relative URL of the API(without queryparams) which also contains the AUTHID
             key = str(auth_session.api_name)
-            if self.has_limit_exceeded(key, self.redis_pool):
+            try:
+                apply_rate_limit = self.has_limit_exceeded(key, self.redis_pool)
+            except:
+                apply_rate_limit = False
+            if apply_rate_limit:
                 return RESTResponse(
                     code=429,
                     content={'error': "too many requests"},
@@ -49,8 +59,8 @@ class FixedWindowRateLimiter(RateLimiter):
     """
     This rate limiter blocks request if number of requests exceed allowed requests in the defined
     time-window till the window resets.
-    To avoid race condition, using a lua script to increment key and set ttl(only first time).
-    This is documented here: https://redis.io/commands/incr#pattern-rate-limiter-2
+    To avoid race condition, using a lua script to increment key and set ttl(only first time).This is
+    documented here: https://redis.io/commands/incr#pattern-rate-limiter-2
     """
     INCREMENT_SCRIPT = b"""
         local current
@@ -70,7 +80,6 @@ class FixedWindowRateLimiter(RateLimiter):
         except redis.exceptions.NoScriptError:
             count = redis_conn.eval(
                 self.INCREMENT_SCRIPT, 1, key, self.window_size)
-        print("count", count)
         if count > self.max_request:
             return True
 
