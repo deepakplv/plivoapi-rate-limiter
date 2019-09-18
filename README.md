@@ -1,6 +1,6 @@
 # plivoapi-rate-limiter
 
-This is a Python library intented to be used with PlivoAPI to rate limit APIs using various rate-limiting mechanisms via decorators.
+This is a Python library intented to be used with PlivoAPI Flask based APIs to rate limit the APIs using various rate-limiting mechanisms via decorators.
 
 pip install git+https://github.com/deepakplv/plivoapi-rate-limiter
 
