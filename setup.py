@@ -2,7 +2,9 @@ from setuptools import setup, find_packages
 import sys
 
 requires = [
-        'redis>=2.6.0'
+        'redis>=2.6.0',
+        'redis-py-cluster>=1.3.4',
+        'Flask>=0.10.1'
         ]
 
 
