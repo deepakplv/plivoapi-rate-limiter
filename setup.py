@@ -3,7 +3,7 @@ import sys
 
 requires = [
         'redis-py-cluster==1.3.4',
-        'redis==4.5.3',
+        'redis==4.5.4',
         'Flask>=0.10.1'
         ]
 
